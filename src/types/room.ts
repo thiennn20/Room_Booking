@@ -1,3 +1,5 @@
+import type { ImageSourcePropType } from 'react-native';
+
 export type RoomStatus = 'Available' | 'Occupied';
 
 export interface Room {
@@ -6,5 +8,5 @@ export interface Room {
   building: string;
   capacity: number;
   status: RoomStatus;
-  image: number; // require() returns a number in React Native
+  image: ImageSourcePropType; // require() is compatible with ImageSourcePropType
 }
