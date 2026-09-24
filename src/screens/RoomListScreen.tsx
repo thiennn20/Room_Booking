@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   FlatList,
+  ActivityIndicator,
   Pressable,
   TextInput,
   type ListRenderItem,
@@ -11,12 +12,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import RoomCard from '../components/RoomCard';
-import { rooms } from '../data/rooms';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { useRooms } from '../hooks/useRooms';
 import type { Room } from '../types/room';
 
 const keyExtractor = (item: Room) => item.id;
-
-const ItemSeparator = () => <View style={styles.separator} />;
 
 const filterOptions = ['All', 'Available', 'Occupied'] as const;
 type RoomFilter = (typeof filterOptions)[number];
@@ -28,11 +28,12 @@ const filterLabels: Record<RoomFilter, string> = {
 };
 
 interface RoomListScreenProps {
-  onRoomPress?: (roomId: string) => void;
+  onRoomPress?: (room: Room) => void;
 }
 
 export default function RoomListScreen({ onRoomPress }: RoomListScreenProps) {
   const { width } = useWindowDimensions();
+  const { data: rooms = [], isLoading, isError, isRefetching, refetch } = useRooms();
   const [searchQuery, setSearchQuery] = React.useState('');
   const [selectedFilter, setSelectedFilter] = React.useState<RoomFilter>('All');
   const columns = width >= 768 ? 3 : width >= 480 ? 2 : 1;
@@ -47,11 +48,22 @@ export default function RoomListScreen({ onRoomPress }: RoomListScreenProps) {
     return matchesSearch && matchesFilter;
   });
 
-  const renderItem: ListRenderItem<Room> = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <RoomCard room={item} onPress={() => onRoomPress?.(item.id)} />
-    </View>
+  const renderItem = React.useCallback<ListRenderItem<Room>>(
+    ({ item, index }) => (
+      <Animated.View entering={FadeInDown.delay(Math.min(index, 8) * 50).springify()} style={styles.itemContainer}>
+        <RoomCard room={item} onPress={() => onRoomPress?.(item)} />
+      </Animated.View>
+    ),
+    [onRoomPress],
   );
+
+  if (isLoading) {
+    return <View style={styles.centerState}><ActivityIndicator size="large" color="#1d4ed8" /><Text style={styles.stateText}>Đang tải danh sách phòng...</Text></View>;
+  }
+
+  if (isError) {
+    return <View style={styles.centerState}><Text style={styles.stateText}>Không thể tải danh sách phòng.</Text><Pressable onPress={() => void refetch()} style={styles.retryButton}><Text style={styles.retryText}>Thử lại</Text></Pressable></View>;
+  }
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
@@ -107,6 +119,8 @@ export default function RoomListScreen({ onRoomPress }: RoomListScreenProps) {
         maxToRenderPerBatch={5}
         windowSize={5}
         showsVerticalScrollIndicator={false}
+        refreshing={isRefetching}
+        onRefresh={() => void refetch()}
       />
     </SafeAreaView>
   );
@@ -206,7 +220,8 @@ const styles = StyleSheet.create({
   columnWrapper: {
     gap: 14,
   },
-  separator: {
-    height: 14,
-  },
+  centerState: { alignItems: 'center', backgroundColor: '#f3f4f6', flex: 1, justifyContent: 'center', padding: 24 },
+  stateText: { color: '#64748b', marginTop: 12, textAlign: 'center' },
+  retryButton: { backgroundColor: '#1d4ed8', borderRadius: 8, marginTop: 14, paddingHorizontal: 18, paddingVertical: 10 },
+  retryText: { color: '#ffffff', fontWeight: '700' },
 });

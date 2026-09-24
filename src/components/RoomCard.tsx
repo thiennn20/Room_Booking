@@ -12,7 +12,7 @@ interface RoomCardProps {
   onPress?: () => void;
 }
 
-export default function RoomCard({ room, onPress }: RoomCardProps) {
+function RoomCard({ room, onPress }: RoomCardProps) {
   const isAvailable = room.status === 'Available';
 
   return (
@@ -49,6 +49,8 @@ export default function RoomCard({ room, onPress }: RoomCardProps) {
     </Pressable>
   );
 }
+
+export default React.memo(RoomCard);
 
 const styles = StyleSheet.create({
   card: {

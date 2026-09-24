@@ -1,11 +1,10 @@
 import type { Booking, TimeSlot } from '../types/booking';
 
 export const timeSlots: TimeSlot[] = [
-  { id: '09:00-10:00', startTime: '09:00', endTime: '10:00' },
-  { id: '10:00-11:00', startTime: '10:00', endTime: '11:00' },
-  { id: '11:00-12:00', startTime: '11:00', endTime: '12:00' },
-  { id: '13:00-14:00', startTime: '13:00', endTime: '14:00' },
-  { id: '14:00-15:00', startTime: '14:00', endTime: '15:00' },
+  { id: '07:30-09:30', startTime: '07:30', endTime: '09:30' },
+  { id: '09:30-11:30', startTime: '09:30', endTime: '11:30' },
+  { id: '13:00-15:00', startTime: '13:00', endTime: '15:00' },
+  { id: '15:00-17:00', startTime: '15:00', endTime: '17:00' },
 ];
 
 const toMinutes = (time: string) => {
@@ -48,4 +47,12 @@ export const formatDate = (date: Date) => {
 export const formatDateLabel = (date: string) => {
   const parsed = new Date(`${date}T00:00:00`);
   return parsed.toLocaleDateString('vi-VN', { weekday: 'short', month: 'short', day: 'numeric' });
+};
+
+export const formatCompactDate = (date: string) => {
+  const parsed = new Date(`${date}T00:00:00`);
+  return {
+    weekday: parsed.toLocaleDateString('vi-VN', { weekday: 'short' }).toUpperCase(),
+    day: parsed.getDate(),
+  };
 };
