@@ -30,8 +30,8 @@ export default function ProfileScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.profileCard}>
           <View style={styles.avatar}><Text style={styles.avatarText}>S</Text></View>
-          <Text style={styles.name}>Sinh viên VKU</Text>
-          <Text style={styles.caption}>Tài khoản đặt phòng trong khuôn viên trường</Text>
+          <Text style={styles.name}>Nguyễn Bá Thiện </Text>
+          <Text style={styles.caption}>0901234567 / thiennb@vku.udn.vn</Text>
           <View style={styles.badge}>
             <Ionicons name="flask-outline" size={14} color="#1d4ed8" />
             <Text style={styles.badgeText}>Demo Mode</Text>
